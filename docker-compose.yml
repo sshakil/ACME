@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:16
+    container_name: acme-db
+    restart: always
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: P@ssword!1
+      POSTGRES_DB: acme
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./ACME-REST/database/CREATE.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - acme-network
+
+  acme-rest:
+    build: ./ACME-REST
+    container_name: acme-rest
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./ACME-REST/.env
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - acme-network
+    entrypoint: ["/bin/sh", "-c", "npx sequelize-cli db:migrate && npx nodemon src/index.js"]
+
+  acme-ui:
+    build: ./acme-ui
+    container_name: acme-ui
+    ports:
+      - "5173:5173"
+    depends_on:
+      acme-rest:
+        condition: service_started
+    env_file:
+      - ./acme-ui/.env
+    networks:
+      - acme-network
+    entrypoint: ["/bin/sh", "-c", "npm run dev"]
+
+  acme-simulator:
+    build: ./ACME-simulator
+    container_name: acme-simulator
+    depends_on:
+      acme-rest:
+        condition: service_healthy
+    env_file:
+      - ./ACME-simulator/.env
+    networks:
+      - acme-network
+    entrypoint: ["/bin/sh", "-c", "node cli.js register-devices 'truck=2' && node cli.js simulate-readings-for-specified-devices 1,2"]
+
+volumes:
+  db-data:
+
+networks:
+  acme-network:
+    driver: bridge
