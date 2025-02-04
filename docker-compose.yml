@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   database:
-    image: postgres:16
+    image: timescale/timescaledb:latest-pg16
     container_name: acme-db
     restart: always
     environment:
@@ -16,6 +14,11 @@ services:
       - ./ACME-REST/database/CREATE.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - acme-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d acme"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   acme-rest:
     build: ./ACME-REST
@@ -23,13 +26,20 @@ services:
     ports:
       - "4000:4000"
     env_file:
-      - ./ACME-REST/.env
+      - ./ACME-REST/.env_docker
+    environment:
+      - NODE_ENV=dockerDev  # Use dockerDev configuration
     depends_on:
       database:
         condition: service_healthy
     networks:
       - acme-network
-    entrypoint: ["/bin/sh", "-c", "npx sequelize-cli db:migrate && npx nodemon src/index.js"]
+    entrypoint: ["/bin/sh", "/app/start.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4000/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   acme-ui:
     build: ./acme-ui
@@ -40,10 +50,10 @@ services:
       acme-rest:
         condition: service_started
     env_file:
-      - ./acme-ui/.env
+      - ./acme-ui/.env_docker
     networks:
       - acme-network
-    entrypoint: ["/bin/sh", "-c", "npm run dev"]
+    entrypoint: ["/bin/sh", "/app/start.sh"]
 
   acme-simulator:
     build: ./ACME-simulator
@@ -52,10 +62,13 @@ services:
       acme-rest:
         condition: service_healthy
     env_file:
-      - ./ACME-simulator/.env
+      - ./ACME-simulator/.env_docker
     networks:
       - acme-network
-    entrypoint: ["/bin/sh", "-c", "node cli.js register-devices 'truck=2' && node cli.js simulate-readings-for-specified-devices 1,2"]
+    stdin_open: true  # Keeps the container open
+    tty: true         # Allocates a TTY
+    entrypoint: ["/bin/bash"]  # Override the default Node.js execution
+    command: ["-c", "exec /bin/bash"]  # Ensures a persistent interactive shell
 
 volumes:
   db-data:
