@@ -11,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./ACME-REST/database/CREATE.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./ACME-REST/src/database/setup/create-db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - acme-network
     healthcheck:
@@ -27,8 +27,6 @@ services:
       - "4000:4000"
     env_file:
       - ./ACME-REST/.env_docker
-    environment:
-      - NODE_ENV=dockerDev  # Use dockerDev configuration
     depends_on:
       database:
         condition: service_healthy
