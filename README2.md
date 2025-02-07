@@ -1,22 +1,20 @@
 # ACME IoT Docker Setup
-Author: Saad Shakil  
-[https://sshakil.github.io](https://sshakil.github.io)
 
 ## Table of Contents
 - [Overview](#overview)
 - [Getting Started](#getting-started)
-    - [Step 1: Build and Start Services](#step-1-build-and-start-services)
-        - [Option A: Attached Mode](#option-a-attached-mode)
-        - [Option B: Detached Mode](#option-b-detached-mode)
-        - [Rebuild and Start](#rebuild-and-start)
-    - [Step 2: Open the UI](#step-2-open-the-ui)
-        - [Monitor WebSocket Events and API Network Calls](#monitor-websocket-events-and-api-network-calls)
-    - [Step 3: Use the CLI to Register Devices, Simulate Readings, Delete Devices, Update Sensors](#step-3-use-the-cli-to-register-devices-simulate-readings-delete-devices-update-sensors)
-        - [Step 3.1: Access acme-simulator](#step-31-access-acme-simulator)
-        - [Step 3.2: Simulate Device Readings](#step-32-simulate-device-readings)
-        - [Step 3.3: Stop Simulation](#step-33-stop-simulation)
-        - [Step 3.4: Delete Devices](#step-34-delete-devices)
-        - [Step 3.5: Modify Sensors](#step-35-modify-sensors)
+  - [Step 1: Build and Start Services](#step-1-build-and-start-services)
+    - [Option A: Attached Mode](#option-a-attached-mode)
+    - [Option B: Detached Mode](#option-b-detached-mode)
+    - [Rebuild and Start](#rebuild-and-start)
+  - [Step 2: Open the UI](#step-2-open-the-ui)
+    - [Monitor WebSocket Events and API Network Calls](#monitor-websocket-events-and-api-network-calls)
+  - [Step 3: Use the CLI to Register Devices, Simulate Readings, Delete Devices, Update Sensors](#step-3-use-the-cli-to-register-devices-simulate-readings-delete-devices-update-sensors)
+    - [Step 3.1: Access acme-simulator](#step-31-access-acme-simulator)
+    - [Step 3.2: Simulate Device Readings](#step-32-simulate-device-readings)
+    - [Step 3.3: Stop Simulation](#step-33-stop-simulation)
+    - [Step 3.4: Delete Devices](#step-34-delete-devices)
+    - [Step 3.5: Modify Sensors](#step-35-modify-sensors)
 - [Shutdown and Delete Containers](#shutdown-and-delete-containers)
 - [License](#license)
 
@@ -32,15 +30,15 @@ To bring up `ACME-REST`, `acme-ui`, and `ACME-simulator`:
 #### Option A: Attached Mode
 - Logs are observable in the current shell.
 
-  <br>Initial build:
+    <br>Initial build:
     ```sh
     docker compose up --build
     ```
 
 #### Option B: Detached Mode
 - Runs in the background, no logs.
-
-  <br>Initial build:
+    
+    <br>Initial build:
     ```sh
     docker compose up --build -d
     ```
@@ -52,7 +50,7 @@ Stop all running containers, remove volumes, rebuild, and start the services:
 ```sh
 docker compose down -v && docker compose up --build
 ```
-[Back to top](#acme-iot-docker-setup)
+
 ### Step 2: Open the UI
 Open the following URL in your browser:
 <br>http://localhost:5173/
@@ -67,7 +65,7 @@ To observe UI<->REST communications:
 
 ### Step 3: Use the CLI to Register Devices, Simulate Readings, Delete Devices, Update Sensors
 
-#### Step 3.1: Access acme-simulator
+#### Step 3.1: Access acme-simulator 
 For Step 1. Option A: Open a new shell and enter the following  
 For Step 1. Option B: Enter the following in the current shell
 
@@ -85,7 +83,6 @@ node cli.js register-devices "car=2,truck=2"
 
 Click on the **first device** in the table and notice that it currently has **no readings**.
 
-[Back to top](#acme-iot-docker-setup)
 #### Step 3.2: Simulate Device Readings
 
 Start sensor data simulation for specific devices:
@@ -96,8 +93,7 @@ node cli.js simulate-readings-for-devices 1,3
 
 📌 **Expected Result**:
 
-- The selected device now shows readings under the **Sensor Data** table. 
-- Readings are sent every 5 seconds by default (set through env-var `SIMULATION_INTERVAL_MS` in `ACME-simulator`)
+- The selected device now shows readings under the **Sensor Data** table.
 - Clicking on another device (e.g., the 3rd device) also shows real-time sensor updates.
 
 #### Step 3.3: Stop Simulation
@@ -127,7 +123,7 @@ node cli.js update-sensor -i 1 -u "px"
 
 📌 **Expected Result**: This will update the camera sensor's unit from pixels to px.
 
-### Step 4. Shutdown and Delete Containers
+### Shutdown and Delete Containers
 ```sh
 docker compose down -v
 ```
