@@ -26,12 +26,36 @@ This project consists of an IoT device and sensor simulator, a REST API backend,
 
 ## Getting Started
 
-### Step 1: Build and Start Services
+### Step 0: docker-compose.yml
+Clone this repo, or manually download the `docker-compose.yml` file, into a directory of your choice.
+
+The file has the `image` attribute set for each service, instead of `build`. You'd need the repos for live builds.
+
+#### Root and Sub-Repo Directory Structure
+If you're interested in exploring the code and setting up a live dev env, this is the structure I used:
+```sh
+ACME
+.
+├── ACME-REST
+├── ACME-simulator
+├── README.md
+├── acme-ui
+└── docker-compose.yml
+```
+##### Repo Links
+
+
+### Step 1: Download (or build) and Start Services
 To bring up `ACME-REST`, `acme-ui`, and `ACME-simulator`:
 
 #### Option A: Attached Mode
 - Logs are observable in the current shell.
 
+    **Initial Download - preferred**
+    ```sh
+    docker compose up
+    ```
+    
   <br>Initial build:
     ```sh
     docker compose up --build
@@ -39,6 +63,11 @@ To bring up `ACME-REST`, `acme-ui`, and `ACME-simulator`:
 
 #### Option B: Detached Mode
 - Runs in the background, no logs.
+
+    Initial Download
+    ```sh
+    docker compose up -d
+    ```
 
   <br>Initial build:
     ```sh

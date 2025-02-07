@@ -21,7 +21,8 @@ services:
       retries: 5
 
   acme-rest:
-    build: ./ACME-REST
+  # build: ./ACME-REST
+    image: lightleaf/acme-acme-rest
     container_name: acme-rest
     ports:
       - "4000:4000"
@@ -40,7 +41,8 @@ services:
       retries: 5
 
   acme-ui:
-    build: ./acme-ui
+    # build: ./acme-ui
+    image: lightleaf/acme-acme-ui
     container_name: acme-ui
     ports:
       - "5173:5173"
@@ -54,7 +56,8 @@ services:
     entrypoint: ["/bin/sh", "/app/start.sh"]
 
   acme-simulator:
-    build: ./ACME-simulator
+    # build: ./ACME-simulator
+    image: lightleaf/acme-acme-simulator
     container_name: acme-simulator
     depends_on:
       acme-rest:
